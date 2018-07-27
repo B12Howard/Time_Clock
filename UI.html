@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <?!= HtmlService.createHtmlOutputFromFile('stylesheet').getContent(); ?>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    $(document).ready(function () {
+      $("#punchIn").on('click', function (event) {  
+      console.log("this is jquery");
+        event.preventDefault();
+        var el = $(this);
+        el.prop('disabled', true);
+        setTimeout(function(){el.prop('disabled', false); }, 1000);
+      });
+    });
+    </script>
+  </head>
+  <body>
+  <div id="wrapper">
+    <h1>
+    <img src="https://drive.google.com/uc?id=1AlYBaTDf4TryV0A8eRyBWZQsGfcVvJNY" alt="Rice Bowl Logo" >
+    Time Clock
+    </h1>
+    
+    <!--This updates afer an employee punches in/out. The left panel of name, time, status. Updates from google.script.run.withSuccessHandler(showData).getData()-->
+    <div class="leftcolumn" id="nametimestatus">
+    </div>
+
+    <div id="rightcolumn">
+    <button class="button button1" id="punchIn" type="submit" value="IN" onclick="punchIns()">Click</button>
+    <!--<button class="button button2" id="punchOut" type="submit" value="OUT" onclick="punchOuts()">OUT</button>-->
+    
+    <select id="nameSelectMenu">    <!--create the dropdown menu of employee names from GS-->
+      <option selected disabled>Select Name</option>
+      <? for(var i=0; i<names.length; i++) { ?>
+      <option value="<? names[i] ?>"><?= names[i] ?></option>
+      <? } ?>
+    </select>
+    <div id="userLoadingNotification"></div>
+    </div>
+  </div>
+    
+  <script>
+  //these functions may not have use anymore. javascript eventlisteners are now used.
+    function punchIns() {
+      var e = document.getElementById('nameSelectMenu').selectedIndex;
+      var y = document.getElementById('nameSelectMenu').options;
+      var name = y[e].text;
+      }
+      
+    function punchOuts() {
+      var e = document.getElementById('nameSelectMenu').selectedIndex; 
+      var y = document.getElementById('nameSelectMenu').options;
+      var name = y[e].text;
+     }
+     
+     //This function may be depricated
+     function getUpdatedList() {
+       google.script.run.getListName();
+     }
+
+    </script>
+    
+    <script type='text/javascript'>
+    //Event listeners check for status, alert if not apporpriate status, if ok then write to database and show user is clocked in/out
+    
+    //window.onload loads the days in/out list on page load
+    window.onload = function(){
+      google.script.run.withSuccessHandler(showData).getData();
+    }
+    
+    document.getElementById("punchIn").addEventListener("click", function() { 
+      var e = document.getElementById('nameSelectMenu').selectedIndex; 
+      var y = document.getElementById('nameSelectMenu').options;
+      var name = y[e].text;
+        var options = document.querySelectorAll('#nameSelectMenu option');
+        for (var i = 0, l = options.length; i < l; i++) {
+        options[i].selected = options[i].defaultSelected;
+        }
+      google.script.run.withSuccessHandler(decodeVerifyInOut).verifyInOut(name,"punchIn");    
+    });
+     
+    //this function takes the name, buttonname, employeestatus and runs to see whether to clock in/out or send an alert to the user
+    function decodeVerifyInOut(data){
+      var employeeName = data[0];
+      //var buttonName = data[1];
+      //var inOutStatus = data[2];
+      var inOutStatus = data[1];
+      
+      //user is not clocked in and pressed IN button
+      if(inOutStatus == "trueIn") {
+        progressTextOn();
+        google.script.run.punchIn(employeeName, inOutStatus);
+        setTimeout(function() {google.script.run.withSuccessHandler(showData).getData(employeeName, inOutStatus);}, 2000);
+      }
+      //user is clocked in and pressed the OUT button
+      if(inOutStatus == "trueOut") {
+        progressTextOn();
+        google.script.run.punchOut(employeeName, inOutStatus);
+        setTimeout(function() {google.script.run.withSuccessHandler(showData).getData(employeeName, inOutStatus);}, 2000);
+      }
+    }
+      
+    //displays days login data to the user interface
+    function showData(data){
+      var html = "";
+      for (var i=0; i<data.length; i++) {
+        html += " <div> " + data[i] + " </div> ";
+      }
+      
+      document.getElementById("nametimestatus").innerHTML = html;
+      document.getElementById("userLoadingNotification").innerHTML = "<p></p>";
+    }
+    
+    function progressTextOn(){
+      document.getElementById("userLoadingNotification").innerHTML = "<p><h2>Computer is Working</h2></p>";
+    }
+    </script>
+    
+  
+  </body>
+</html>
+
+
