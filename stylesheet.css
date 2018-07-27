@@ -1,0 +1,87 @@
+<style>     
+    #wrapper {
+    width: 1005px;
+    margin: 0 auto;
+    }
+    #rightcolumn {
+    float: left;
+    min-height: 450px;
+    width: 75%;
+    }
+    .leftcolumn {
+    padding: 0px;
+    float: left;
+    min-height: 450px;
+    width: 25%;
+    }
+    div.leftcolumn > div:nth-of-type(odd) {
+    background: #D0D3D4;
+    float: left;
+    min-height: 1px;
+    }
+    div.leftcolumn > div:nth-of-type(even) {
+    background: #ECF0F1;
+    float: left;
+    min-height: 1px;
+    }
+
+    .button {
+    border: none;
+    margin: 5px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: 145px;
+    height: 100px;
+    font-size: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+    .button:hover {
+      opacity: 0.9;
+    }    
+    .button:focus {
+      outline:0;
+    }
+    .button:active {
+    outline:none;
+    box-shadow: 0 6px 14px 0 rgba(0,0,0,0.2), 0 5px 18px 0 rgba(0,0,0,0.19);
+    transform: translateY(3px);
+    }
+    .button1 {
+    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    background: linear-gradient(#85929E  , #2E4053);
+    color: white; 
+    }
+    .button2 {
+    background: linear-gradient(#F5B7B1, #E74C3C);
+    color: black; 
+    }
+    
+    select {
+    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    outline:none;
+    margin: 10px;
+    width: 180px;
+    padding: 5px 5px 5px 5px;
+    font-size: 25px;
+    height: 90px;
+    }
+    option{
+      font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+    img { 
+      height: 5%;
+      width: 5%; 
+    }
+    
+    h1 {
+      font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+      font-size: 45px;
+    }
+    h2 {
+      font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+      font-size: 30px;
+    }
+</style>
