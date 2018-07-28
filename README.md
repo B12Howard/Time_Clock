@@ -1,86 +1,32 @@
 # Time_Clock
-Google Apps Script time clock for businesses. This was created so we could do payroll internally and not incur another monthly fee. You keep your employee information on your Google Sheets/ Google Drive account. You'll have to modify the Google Sheet for your employees. This script as is was made for a small business and the script may not work/ work well for businesses with a large number of employees.
+Google Apps Script time clock for businesses. This was created so we could do payroll internally and not incur another monthly fee to some company. You keep your employee information on your Google Sheets/ Google Drive account. You'll have to modify the Google Sheet for your employees' names. This script as is, was made for a small business and the script may not work/ work well for businesses with a large number of employees.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+Google Sheets
+Google App Script/ Typescript
+HTML, CSS
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+Upload "Timesheet For Github.xlsx" to Google Sheets
 
-Say what the step will be
+In Google Sheets go to Tools-> Script editor  
+Upload html, and .gs files in Script Editor
+Go to Publish -> Deploy as web app and deploy
 
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+Edit the sheet eg. EmployeeName1 -> real name of an employee
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+Do as you please with the files! This could be so much better
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Howard Luong**
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
