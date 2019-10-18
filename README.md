@@ -11,7 +11,8 @@ HTML, CSS
 
 ### Installing
 
-Upload "Timesheet For Github.xlsx" to Google Sheets
+Make a copy of the Sheet 
+https://docs.google.com/spreadsheets/d/1H99RYIiWx0IsGaK-tPSJSw6t5oj_NOrwDLtAW-QqJas/copy
 
 In Google Sheets go to Tools-> Script editor  
 Upload html, and .gs files in Script Editor
