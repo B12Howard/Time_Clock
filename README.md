@@ -18,7 +18,8 @@ In Google Sheets go to Tools-> Script editor
 Upload html, and .gs files in Script Editor
 Go to Publish -> Deploy as web app and deploy
 
-Edit the sheet eg. EmployeeName1 -> real name of an employee
+### Adding Employees
+In the menu go to Actions -> Add Employee then enter their name. They will be put into the EmployeesList and populate the relevant worksheets
 
 ## Contributing
 
