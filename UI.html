@@ -2,33 +2,23 @@
 <html>
   <head>
     <base target="_top">
-    <?!= HtmlService.createHtmlOutputFromFile('stylesheet').getContent(); ?>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
-    $(document).ready(function () {
-      $("#punchIn").on('click', function (event) {  
-      console.log("this is jquery");
-        event.preventDefault();
-        var el = $(this);
-        el.prop('disabled', true);
-        setTimeout(function(){el.prop('disabled', false); }, 1000);
-      });
-    });
-    </script>
+    <?!= HtmlService.createHtmlOutputFromFile('stylesheet').getContent(); ?>   
   </head>
   <body>
   <div id="wrapper">
+    <div class="header">
+    <img src="https://drive.google.com/uc?id=1AlYBaTDf4TryV0A8eRyBWZQsGfcVvJNY" alt="Rice Bowl Logo" >
     <h1>
-    <img src="" alt="Logo" >
-    Time Clock
+    Time Tool
     </h1>
     
+    </div>
     <!--This updates afer an employee punches in/out. The left panel of name, time, status. Updates from google.script.run.withSuccessHandler(showData).getData()-->
     <div class="leftcolumn" id="nametimestatus">
     </div>
 
     <div id="rightcolumn">
-    <button class="button button1" id="punchIn" type="submit" value="IN" onclick="punchIns()">Click</button>
-    <!--<button class="button button2" id="punchOut" type="submit" value="OUT" onclick="punchOuts()">OUT</button>-->
+    <button class="button button1" id="punchIn" type="submit" value="IN" >PRESS</button>
     
     <select id="nameSelectMenu">    <!--create the dropdown menu of employee names from GS-->
       <option selected disabled>Select Name</option>
@@ -38,87 +28,62 @@
     </select>
     <div id="userLoadingNotification"></div>
     </div>
-  </div>
-    
-  <script>
-  //these functions may not have use anymore. javascript eventlisteners are now used.
-    function punchIns() {
-      var e = document.getElementById('nameSelectMenu').selectedIndex;
-      var y = document.getElementById('nameSelectMenu').options;
-      var name = y[e].text;
-      }
-      
-    function punchOuts() {
-      var e = document.getElementById('nameSelectMenu').selectedIndex; 
-      var y = document.getElementById('nameSelectMenu').options;
-      var name = y[e].text;
-     }
-     
-     //This function may be depricated
-     function getUpdatedList() {
-       google.script.run.getListName();
-     }
-
-    </script>
-    
-    <script type='text/javascript'>
+  </div>  
+  
+   <script type='text/javascript'>
     //Event listeners check for status, alert if not apporpriate status, if ok then write to database and show user is clocked in/out
     
     //window.onload loads the days in/out list on page load
     window.onload = function(){
+      console.log("Test")
       google.script.run.withSuccessHandler(showData).getData();
     }
     
-    document.getElementById("punchIn").addEventListener("click", function() { 
+    document.getElementById("punchIn").addEventListener("click", function() {
       var e = document.getElementById('nameSelectMenu').selectedIndex; 
       var y = document.getElementById('nameSelectMenu').options;
       var name = y[e].text;
-        var options = document.querySelectorAll('#nameSelectMenu option');
-        for (var i = 0, l = options.length; i < l; i++) {
+      var options = document.querySelectorAll('#nameSelectMenu option');
+      
+      // Check if name is default
+      if(e == 0) return;
+      
+      // Set select menu to default
+      for (var i = 0, l = options.length; i < l; i++) {
         options[i].selected = options[i].defaultSelected;
-        }
-      google.script.run.withSuccessHandler(decodeVerifyInOut).verifyInOut(name,"punchIn");    
+      }
+      
+      document.getElementById("nameSelectMenu").style.visibility = "hidden";
+      google.script.run.withSuccessHandler(decodeVerifyInOut).verifyInOut(name);       
     });
-     
+    
     //this function takes the name, buttonname, employeestatus and runs to see whether to clock in/out or send an alert to the user
-    function decodeVerifyInOut(data){
+    function decodeVerifyInOut(data){ 
       var employeeName = data[0];
-      //var buttonName = data[1];
-      //var inOutStatus = data[2];
       var inOutStatus = data[1];
-      
-      //user is not clocked in and pressed IN button
-      if(inOutStatus == "trueIn") {
-        progressTextOn();
-        google.script.run.punchIn(employeeName, inOutStatus);
-        setTimeout(function() {google.script.run.withSuccessHandler(showData).getData(employeeName, inOutStatus);}, 2000);
-      }
-      //user is clocked in and pressed the OUT button
-      if(inOutStatus == "trueOut") {
-        progressTextOn();
-        google.script.run.punchOut(employeeName, inOutStatus);
-        setTimeout(function() {google.script.run.withSuccessHandler(showData).getData(employeeName, inOutStatus);}, 2000);
-      }
+    
+      progressTextOn();
+      google.script.run.punchIn(employeeName, inOutStatus);
+      setTimeout(function() {google.script.run.withSuccessHandler(showData).getData(employeeName, inOutStatus);}, 1500);     
     }
-      
-    //displays days login data to the user interface
+    
+    //displays day's login data to the user interface
     function showData(data){
       var html = "";
+      
       for (var i=0; i<data.length; i++) {
-        html += " <div> " + data[i] + " </div> ";
+        html += " <div class='myList'> " + data[i] + " </div> ";
       }
       
       document.getElementById("nametimestatus").innerHTML = html;
       document.getElementById("userLoadingNotification").innerHTML = "<p></p>";
+      document.getElementById("nameSelectMenu").style.visibility = "visible";
     }
     
     function progressTextOn(){
-      document.getElementById("userLoadingNotification").innerHTML = "<p><h2>Computer is Working</h2></p>";
+      document.getElementById("userLoadingNotification").innerHTML = "<p><h2>Working! Hold On!!</h2></p>";
     }
     </script>
-    
   
   </body>
 </html>
-
-
