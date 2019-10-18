@@ -1,3 +1,12 @@
+var spreadsheetId = "YOURSPREADSHEETID";
+var driveFolderIdForCopy = "DRIVEFODLERID";
+var home = "home";
+var employeeList = "EmployeeList";
+var total = "Totals";
+var calc = "Calculator";
+var inst = "Instructions";
+var template = "Template";
+
 function doGet(e) {
   var SHEET_ID = e.parameter.sheet_id;  
   var html = HtmlService.createTemplateFromFile('UI');
@@ -5,72 +14,72 @@ function doGet(e) {
   var listName = [];
   
   html.names = getNames();
-  html.listName = getListName(); //updates for user to see if they successfully clocked in/out
+  html.listName = getListName(); //updates the app for user to see if they successfully clocked in/out
   return html.evaluate().setTitle('Time Clock');
 }
 
 //add in/out detection and return boolean this will tell whether or not to start the read/write to database
-function verifyInOut(activeEmployeeName, buttonName) {
-  var newActiveSheet = SpreadsheetApp.openById("147DITdK9WwDuEaoMsW7dK4s_8qNfymTZrExrxVEKLCo").getSheetByName(activeEmployeeName); //use your Google Sheet ID
-  newActiveSheet.activate();
+function verifyInOut(activeEmployeeName) {
+  var newActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(activeEmployeeName);
   
   // show the user the script is running
   var lastRow = newActiveSheet.getLastRow();
   var lastColumn = newActiveSheet.getLastColumn();
   var lastCell = newActiveSheet.getRange(lastRow, lastColumn);
   var lastCellValue = lastCell.getValue();
-  var button = buttonName;
   var employeeAndButtonNameArr = [activeEmployeeName];
   
+  // in == 1 out == 0
   //This is to call punch in
   if(lastCellValue == 'Out'){
-    employeeAndButtonNameArr.push("trueIn");
+    employeeAndButtonNameArr.push('In');
+    
     return employeeAndButtonNameArr;
   }
   //this is to call punch out
   else if(lastCellValue == 'In'){
-    employeeAndButtonNameArr.push("trueOut");
+    employeeAndButtonNameArr.push('Out');
+    
     return employeeAndButtonNameArr;
   }
-  else {//this is to handle when the time card is blank
-    employeeAndButtonNameArr.push("trueIn");
+  //this is to handle when the time card is blank
+  else {
+    employeeAndButtonNameArr.push('In');
+    
     return employeeAndButtonNameArr;
   }
-  
 }
   
 //gets the names, time, status from home sheet from the spreadsheeet and sends it to the html to dynamically post
 function getData(employeeName, inOutStatus){
-  var sheet = SpreadsheetApp.openById("147DITdK9WwDuEaoMsW7dK4s_8qNfymTZrExrxVEKLCo").getSheets()[0]; //use your Google Sheet ID
-  sheet.activate();
+  var sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(home);
   var employee = employeeName;
   var status = inOutStatus;
   var numRows = sheet.getLastRow() + 1;
   var listNames = [];
-  var compareName = sheet.getRange(sheet.getLastRow(), 1);
-  var compareStatus = sheet.getRange(sheet.getLastRow(), 3);
-  
-  //check if the last entry really is the person punching in/out then send the data to the UI. This is to prevent double posting
-  if(compareName != employee && compareStatus != status) {
-    for(j=1; j<numRows; j++) {
-      var nameInRow = sheet.getRange(j+1,1,numRows,3).getDisplayValues();
-      listNames[j-1] = nameInRow[0][0] + " "  + nameInRow[0][1] + " " + nameInRow[0][2];
-    }
-    return listNames;
+  var compareName = sheet.getRange(sheet.getLastRow(), 1).getValue();
+  var compareStatus = sheet.getRange(sheet.getLastRow(), 3).getValue();
+
+  for(j=1; j<numRows-1; j++) {
+    var nameInRow = sheet.getRange(j+1,1,numRows,3).getDisplayValues();
+    
+    listNames[j-1] = nameInRow[0][0] + " "  + nameInRow[0][1] + " " + nameInRow[0][2];
   }
+  return listNames;
 }
 
+// Get list of today's clock in/out to post to web app
 function getListName() {
   var listNames = [];
-  var newActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('home');
-  newActiveSheet.activate();
-  var activeColumnEmployeeNames = newActiveSheet.getRange("A1:C40");
-  var numRows = SpreadsheetApp.getActiveSpreadsheet().getLastRow();
+  var newActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName('home');
+  var activeColumnEmployeeNames = newActiveSheet.getRange("A1:C");
+  var numRows = newActiveSheet.getLastRow();
   
   for(j=1; j<numRows; j++) {
     if (nameInRow == "") {
       break;
     }
+    
     //parse name, time, status
     var nameInRow = newActiveSheet.getRange(j+1,1,1,3).getDisplayValues();
     listNames[j-1] = nameInRow[0][0] + " "  + nameInRow[0][1] + " " + nameInRow[0][2];
@@ -81,13 +90,11 @@ function getListName() {
 //get names of employees from the employee sheet
 function getNames() {
   var names = [];
-  var newActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('EmployeeList');
-  newActiveSheet.activate();
+  var newActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName('EmployeeList');
   var activeColumnEmployeeNames = newActiveSheet.getRange("A:A");
-  //find number of nonempty rows
-  var numRows = SpreadsheetApp.getActiveSpreadsheet().getLastRow();
+  var numRows = newActiveSheet.getLastRow();
   
-  //loop through this list and get names
+  //loop through this list and get employee names
   for(j=1; j<numRows+1; j++) {
     if (nameInRow == "") {
       break;
@@ -98,31 +105,6 @@ function getNames() {
   return names;
 }
 
-//functions from original version of the time clock. This allows sheet to be used without the HTML/JS interface
-function setValue(cellName, value) {
-  SpreadsheetApp.getActive().getRange(cellName).setValue(value);
-}
-
-function customGetValue(cellName) {
-  return SpreadsheetApp.getActiveSpreadsheet().getRange(cellName).getValue();
-}
-
-function getNextRow() {
-  return SpreadsheetApp.getActiveSheet().getLastRow()+1
-}
-
-function addRecord (a, b, c) {
-  var row = getNextRow();
-  setValue('A' + row, a);
-  setValue('B' + row, b);
-  setValue('C' + row, c);
-}
-
-function clearRange() {
-  var sheet = SpreadsheetApp.getActive().getSheetByName('home');
-  sheet.getRange('G1').clearContent();
-}
-
 function clearHomeTimes() {
   var sheet = SpreadsheetApp.getActive().getSheetByName('home');
   sheet.getRange('A2:C').clearContent();
@@ -131,72 +113,34 @@ function clearHomeTimes() {
 function punchIn(name, inOutStatus) {
   var activeEmployeeName = name;
   var newDate = new Date();
-  
-  var newActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(activeEmployeeName); //make the select employee's tab active for addRecord
-  newActiveSheet.activate();
-  
-  var sheet = SpreadsheetApp.getActiveSheet();
-  //var employee = name;
+  var sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(activeEmployeeName); //make the select employee's tab active for addRecord
   var status = inOutStatus;
   var lastRow = sheet.getLastRow();
   var lastColumn = sheet.getLastColumn();
   var lastCell = sheet.getRange(lastRow, lastColumn);
   var lastCellValue = lastCell.getValue();
   var lastCellDate = sheet.getRange(sheet.getLastRow(), 2);
-  if(lastCellDate.getValue() == 'Time'){
-    var t2 = 0.0
-    }
-  else{
-    var prevDateTime = new Date(lastCellDate.getValue());
-    var t2 = prevDateTime.getTime();
-    }
+  var status = inOutStatus;
   
-  //var prevDateTime = new Date(lastCellDate.getValue());
+  // check for double clicks
+  if(lastRow == 1) { var t2 = 0.0 }
+  else {
+    var t2 = new Date(lastCellDate.getValue()).getTime();
+  }
+  
   var t1 = newDate.getTime();
-  //var t2 = prevDateTime.getTime();
   var diff = t1-t2;
   
   //test if new date/time is 1 at least 20 sec (20000 ms) more than old time to prevent double logging
-  if (lastCellValue != 'In' && diff>20000) {
-    //put time into employee's tab 
-    addRecord(activeEmployeeName, newDate, 'In'); 
-    //post to UI
-    var homeActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("home");
-    homeActiveSheet.activate();
-    addRecord(activeEmployeeName, newDate, 'In');
-  }
-}
-
-function punchOut(name, inOutStatus) {
-  var activeEmployeeName = name;
-  var newDate = new Date();
+  if (lastCellValue != status && diff>20000) {
+    var homeActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(home);
+    var homeLastRow = homeActiveSheet.getRange("A:A").getValues().filter(String).length;
     
-  var newActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(activeEmployeeName);
-  newActiveSheet.activate();
-  var sheet = SpreadsheetApp.getActiveSheet();
-  var lastRow = sheet.getLastRow();
-  var lastColumn = sheet.getLastColumn();
-  var lastCell = sheet.getRange(lastRow, lastColumn);
-  var lastCellValue = lastCell.getValue();
-  var lastCellDate = sheet.getRange(sheet.getLastRow(), 2);
-  if(lastCellDate.getValue() == 'Time'){
-    var t2 = 0.0
-    }
-  else{
-    var prevDateTime = new Date(lastCellDate.getValue());
-    var t2 = prevDateTime.getTime();
-    }
-  
-  //var prevDateTime = new Date(lastCellDate.getValue());
-  var t1 = newDate.getTime();
-  //var t2 = prevDateTime.getTime();
-  var diff = t1-t2;
-  
-  //check if the last entry really is the person punching in/out then send the data to the UI. And test if new date/time is 1 at least 20 sec (20000 ms) more than old time to prevent double logging
-  if (lastCellValue != 'Out' && diff>20000) { 
-    addRecord(activeEmployeeName, newDate, 'Out');
-    var homeActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("home");
-    homeActiveSheet.activate();
-    addRecord(activeEmployeeName, newDate, 'Out');
+    homeActiveSheet.getRange(homeLastRow+1,1,1,3).setValues([[activeEmployeeName, newDate, status]]); 
+    
+    SpreadsheetApp.flush();
+    
+    //set data into employee's tab 
+    sheet.getRange(lastRow+1,1,1,3).setValues([[activeEmployeeName, newDate, status]]);  
   }
 }
