@@ -1,4 +1,11 @@
 var spreadsheetId = "YOURSPREADSHEETID";
+var driveFolderIdForCopy = "DRIVEFODLERID";
+var home = "home";
+var employeeList = "EmployeeList";
+var total = "Totals";
+var calc = "Calculator";
+var inst = "Instructions";
+var template = "Template";
 
 function doGet(e) {
   var SHEET_ID = e.parameter.sheet_id;  
@@ -45,7 +52,7 @@ function verifyInOut(activeEmployeeName) {
   
 //gets the names, time, status from home sheet from the spreadsheeet and sends it to the html to dynamically post
 function getData(employeeName, inOutStatus){
-  var sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName("home");
+  var sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(home);
   var employee = employeeName;
   var status = inOutStatus;
   var numRows = sheet.getLastRow() + 1;
@@ -64,7 +71,7 @@ function getData(employeeName, inOutStatus){
 // Get list of today's clock in/out to post to web app
 function getListName() {
   var listNames = [];
-  var newActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName('home');
+  var newActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(home);
   var activeColumnEmployeeNames = newActiveSheet.getRange("A1:C");
   var numRows = newActiveSheet.getLastRow();
   
@@ -99,7 +106,7 @@ function getNames() {
 }
 
 function clearHomeTimes() {
-  var sheet = SpreadsheetApp.getActive().getSheetByName('home');
+  var sheet = SpreadsheetApp.getActive().getSheetByName(home);
   sheet.getRange('A2:C').clearContent();
 }
 
@@ -126,7 +133,7 @@ function punchIn(name, inOutStatus) {
   
   //test if new date/time is 1 at least 20 sec (20000 ms) more than old time to prevent double logging
   if (lastCellValue != status && diff>20000) {
-    var homeActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName("home");
+    var homeActiveSheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName(home);
     var homeLastRow = homeActiveSheet.getRange("A:A").getValues().filter(String).length;
     
     homeActiveSheet.getRange(homeLastRow+1,1,1,3).setValues([[activeEmployeeName, newDate, status]]); 
