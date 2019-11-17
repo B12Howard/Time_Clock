@@ -196,9 +196,17 @@ function eraseOldTimesFromEachSheet() {
         var row = j+2;
         var delteRange = tempSheet.getRange("A2:" + "C" + row);
         
-        delteRange.clearContent();
         
-        moveTimesToTop(row, numberOfEntrys, employeeName);
+//        delteRange.clearContent();
+        
+      //  moveTimesToTop(row, numberOfEntrys, employeeName);
+        
+        var remainingVals = values.slice(j+1).filter(String);
+        Logger.log(employeeName)
+        Logger.log(remainingVals)
+        tempSheet.getRange(2, 1, tempSheet.getMaxRows()-1, 3).clearContent();
+        SpreadsheetApp.flush();
+        tempSheet.getRange(2, 1, remainingVals.length, 3).setValues(remainingVals);
         
         break;
       }
