@@ -140,23 +140,6 @@ function saveCopyOfSheet() {
   SpreadsheetApp.getActiveSpreadsheet().toast("Saved a copy to your Drive");
 }
 
-//copy items first, then clear the columns, then paste
-function moveTimesToTop(row, numberOfEntrys, employeeName) {  
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(employeeName);  
-  var values = sheet.getRange('B2:B').getValues();
-  var numOfVals = values.filter(String).length;
-  
-  if(numOfVals > 0)
-  {
-    var copyRange = sheet.getRange(row+1, 1, numOfVals, 3);
-    var copyRangeDataLength = copyRange.getValues().length;
-    if(!copyRange.getCell(1,1).isBlank()) {
-      copyRange.copyValuesToRange(sheet, 1, 3, 2, copyRangeDataLength);
-      copyRange.clearContent();
-    }
-  }
-}
-
 function eraseOldTimesFromEachSheet() {
   var sheetToGetName = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(calc);
   var range = sheetToGetName.getRange("A1:B2");
@@ -193,19 +176,13 @@ function eraseOldTimesFromEachSheet() {
 
       //case next date is greater than Calculator end date or next value is blank
       else if((new Date(dateRangeValues[j+1][0]).getTime() > endDateData) || dateRangeValues[j+1][0] == ""){
-        var row = j+2;
-        var delteRange = tempSheet.getRange("A2:" + "C" + row);
-        
-        
-//        delteRange.clearContent();
-        
-      //  moveTimesToTop(row, numberOfEntrys, employeeName);
-        
+        var row = j+2;     
         var remainingVals = values.slice(j+1).filter(String);
-        Logger.log(employeeName)
-        Logger.log(remainingVals)
+
         tempSheet.getRange(2, 1, tempSheet.getMaxRows()-1, 3).clearContent();
+        
         SpreadsheetApp.flush();
+        
         tempSheet.getRange(2, 1, remainingVals.length, 3).setValues(remainingVals);
         
         break;
