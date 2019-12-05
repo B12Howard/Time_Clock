@@ -38,32 +38,37 @@ function totalTimeInterfaceAutomated(nameInput) {
     //find the cell of the beginning of the range and the end of the range
     if(numTimes) {
       for(var i = 1; i < totalsData.length; i++) {
-        var testDateValue = new Date(totalsData[i][colIndex]).getTime();
+        var testDateValue = new Date(totalsData[i][colIndex]).valueOf();
         
         if(testDateValue > getEndDate) {
-          end = i-1;
+          end = i;
           break;
         }
         
-        if(testDateValue >= getStartDate && i == 0) {
-          begin = i; //captures cell to start getting times
+        if(testDateValue >= getStartDate) {
+          if(begin==0) {
+            begin = i; //captures cell to start getting times
+            Logger.log(new Date(testDateValue))
+          }
           
           //Look ahead one cell. If we reach end of list/next cell is blank then break out of the loop. This is to satisfy the case of employee having only one entry
-          if(i == totalsData.length-1 || !totalsData[i+1][colIndex]) {
-            end = 1;
+          if(i == totalsData.length || !totalsData[i+1][colIndex]) {
+            Logger.log("only one entry")
+            end = i+1;
             break;
           }
         }
         
-        if (!totalsData[i+1][colIndex] || testDateValue > getEndDate){ //Look ahead one cell. If we reach end of list/next cell is blank, assign current i to end
-          end = i-1;
+        if (!totalsData[i+1][colIndex] || testDateValue > getEndDate){ //Look ahead one cell. If we reach end of list/next cell is blank, assign current i+1 to end
+          Logger.log("case of blank entry before eod")
+          end = i+1;
           break;
         }
       }
+      //Logger.log(end-begin)
+      if(end-begin<1) return(["","",""]);
       
-      if(begin == 0 && end == 0) return(["","",""]);
-      
-      var copyRange = newActiveSheet.getRange(begin+2, colIndex+2, (end-begin)).getValues(); //array of times collected (column with the employees name)
+      var copyRange = newActiveSheet.getRange(begin+1, colIndex+2, (end-begin)==0?1:(end-begin)).getValues(); //array of times collected (column with the employees name)
       var totalMin = calculateDuration(copyRange);
       var minHour = minToHours(totalMin);
       
